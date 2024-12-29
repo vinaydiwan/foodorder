@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- enable debug to output internal debug messages -->
+<configuration debug="false">
+	<!-- defning properties to use in appender -->
+	<property resource="application.properties" />
+	<property name="module" value="${spring.application.name}" />
+	<property name="destination" value="./logs" />
+	<property name="maxhistory" value="5" />
+	<property name="maxsize" value="10MB" />
+	
+	<!-- Console appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+       <encoder>
+	    	<!--
+	    	<pattern>
+			%d{yyyy-MM-dd HH:mm:ss.SSS} | ${module} | ${instanceId} | [%thread] | %-5level | %X{USER_ID} | %X{SESSION_ID} | %X{WORKITEM_ID} | %X{PARENT_SPAN_ID} | %X{SPAN_ID} | %logger:%M|%line|%msg%n
+			</pattern>
+			-->
+			<pattern>
+			%d{yyyy-MM-dd HH:mm:ss.SSS} | ${module} | [%thread] | %-5level | %logger:%M|%line|%msg%n
+			</pattern>
+    	</encoder>
+    </appender>
+
+    <appender name="DIAGNOSTIC" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${destination}/${module}-diagnostic.log</file>
+        
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} | ${module} | [%thread] | %-5level | %logger:%M|%line|%msg%n</Pattern>
+        </encoder>
+      
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${destination}/archived/${module}-diagnostic-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <MaxHistory>${maxhistory}</MaxHistory>
+            <maxFileSize>${maxsize}</maxFileSize>
+        </rollingPolicy>
+        
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+    		<level>TRACE</level>
+    		<onMatch>ACCEPT</onMatch>
+    		<onMismatch>NEUTRAL</onMismatch>
+    	</filter>
+    	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+    		<level>DEBUG</level>
+    		<onMatch>ACCEPT</onMatch>
+    		<onMismatch>NEUTRAL</onMismatch>
+    	</filter>
+    	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+    		<level>INFO</level>
+    		<onMatch>ACCEPT</onMatch>
+    		<onMismatch>DENY</onMismatch>
+    	</filter>
+    </appender>
+
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${destination}/${module}-error.log</file>
+        
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} | ${module} | [%thread] | %-5level | %logger:%M|%line|%msg%n</Pattern>
+        </encoder>
+      
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${destination}/archived/${module}-error-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <MaxHistory>${maxhistory}</MaxHistory>
+            <maxFileSize>${maxsize}</maxFileSize>
+        </rollingPolicy>
+        
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+    		<level>WARN</level>
+    	</filter>
+    </appender>
+
+    <!-- specify specific logger config -->
+    <logger name="org.springframework" level="error" />	
+    <logger name="org.springframework.web" level="error" />	
+    
+    <root level="DEBUG">
+        <!-- <appender-ref ref="CONSOLE"/> -->
+        <appender-ref ref="DIAGNOSTIC"/>
+        <appender-ref ref="ERROR"/>
+    </root>
+</configuration>

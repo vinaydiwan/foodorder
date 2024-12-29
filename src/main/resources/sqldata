@@ -1,0 +1,6 @@
+INSERT INTO public.admininfo(
+	email, firstname, lastname, password, username)
+	VALUES ('vinaydiwan@gmail.com', 'Vinay', 'Diwan', 'vinaydwn', 'vinaydwn');
+INSERT INTO public.admininfo(
+	email, firstname, lastname, password, username)
+	VALUES ('rahuldiwan@gmail.com', 'Rahul', 'Diwan', 'rahuldwn', 'rahuldwn');
